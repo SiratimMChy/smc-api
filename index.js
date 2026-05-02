@@ -18,13 +18,14 @@ const headers = {
   "User-Agent": "smc-api"
 };
 
-// 🔹 GraphQL: Commits (Year)
+// 🔹 GraphQL: Commits (Current Year)
 async function getCommits() {
+  const currentYear = new Date().getFullYear();
   const query = {
     query: `
     {
       user(login: "${USERNAME}") {
-        contributionsCollection {
+        contributionsCollection(from: "${currentYear}-01-01T00:00:00Z", to: "${currentYear}-12-31T23:59:59Z") {
           contributionCalendar {
             totalContributions
           }
@@ -92,6 +93,7 @@ app.get("/card", async (req, res) => {
     const commits = await getCommits();
     const prs = await getPRs();
     const issues = await getIssues();
+    const currentYear = new Date().getFullYear();
 
     const svg = `
     <svg width="520" height="230" xmlns="http://www.w3.org/2000/svg">
@@ -103,10 +105,10 @@ app.get("/card", async (req, res) => {
 
       <rect width="100%" height="100%" class="bg" rx="14"/>
 
-      <text x="20" y="35" class="title">SMC GitHub Stats</text>
+      <text x="20" y="35" class="title">SMC GitHub Stats (${currentYear})</text>
 
       <text x="20" y="70" class="text">⭐ Stars: ${stars}</text>
-      <text x="20" y="100" class="text">🔁 Commits (Year): ${commits}</text>
+      <text x="20" y="100" class="text">🔁 Commits (${currentYear}): ${commits}</text>
       <text x="20" y="130" class="text">🔀 PRs: ${prs}</text>
       <text x="20" y="160" class="text">🐛 Issues: ${issues}</text>
       <text x="20" y="190" class="text">🏢 Contributed to: ${orgs.size}</text>
